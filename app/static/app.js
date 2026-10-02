@@ -5,7 +5,11 @@ async function analyze(){
  btn.disabled=true;btn.textContent='Reading public sources…';out.innerHTML='';
  try{
   const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({linkedin,instagram})});
-  const d=await r.json(); if(!r.ok) throw Error(d.error);
+  const raw=await r.text();
+  let d;
+  try { d=JSON.parse(raw); }
+  catch (_) { throw Error(r.ok ? 'The analyzer returned an invalid response.' : `Analyzer server error (${r.status}). Please retry after the deployment finishes.`); }
+  if(!r.ok) throw Error(d.error || `Analyzer server error (${r.status}).`);
   out.innerHTML=`<div class="panel live-profile" style="margin-top:18px">
     <div class="eyebrow">PROFILE READY · ${escapeHtml(d.name)}</div>
     <h2>${escapeHtml(d.role)}</h2>

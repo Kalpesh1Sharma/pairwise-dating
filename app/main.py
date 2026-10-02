@@ -331,7 +331,9 @@ def fetch_public(url):
                 'quality': quality, 'method': 'reader',
                 'reason': '' if quality == 'good' else 'Only limited public metadata was available.'
             }
-    except requests.RequestException:
+    except Exception:
+        # A reader/proxy can return HTML or a 5xx body instead of usable source
+        # content. Treat that as unavailable instead of crashing /api/analyze.
         pass
 
     direct['reason'] = 'Only limited public metadata was available; no unsupported traits were invented.'
