@@ -192,6 +192,18 @@ def slug_name(url):
     except Exception:
         return ''
 
+def is_auth_shell(text, host=''):
+    s = re.sub(r'\s+', ' ', text or '').lower()
+    markers = [
+        'title: sign up', 'title: log in', 'sign up | linkedin',
+        'agree & join linkedin', 'by clicking continue to join or sign in',
+        'join linkedin', 'sign in to linkedin', 'log in to linkedin',
+        'linkedin url source:', 'markdown content:', 'instagram login',
+        'log in • instagram', 'sign up • instagram', 'login • instagram',
+        'challenge_required', 'unusual traffic', 'verify you are human',
+    ]
+    return sum(1 for m in markers if m in s) >= 1 and host in {'linkedin.com', 'instagram.com'}
+
 def _meta(soup, *keys):
     for attr, value in keys:
         tag = soup.find('meta', attrs={attr: value})
@@ -230,39 +242,34 @@ def _visible_text(soup):
 
 def _parse_html(html, final_url, status=200):
     soup = BeautifulSoup(html, 'html.parser')
+    host = source_host(final_url)
     title = soup.title.get_text(' ', strip=True) if soup.title else ''
     og_title = _meta(soup, ('property', 'og:title'), ('name', 'twitter:title'))
-    desc = _meta(
-        soup,
-        ('name', 'description'),
-        ('property', 'og:description'),
-        ('name', 'twitter:description')
-    )
+    desc = _meta(soup, ('name', 'description'), ('property', 'og:description'), ('name', 'twitter:description'))
     canonical = soup.find('link', rel='canonical')
     canonical_url = canonical.get('href', '').strip() if canonical else final_url
     jsonld = _jsonld_text(soup)
     visible = _visible_text(soup)
     combined = ' '.join(x for x in [title, og_title, desc, jsonld, visible] if x)
 
-    blocked_markers = (
-        'sign in', 'join linkedin', 'log in', 'login', 'challenge',
-        'unusual traffic', 'page not found', 'sorry, this page'
-    )
-    blocked = any(marker in combined.lower() for marker in blocked_markers)
+    if is_auth_shell(combined, host):
+        return {
+            'ok': False, 'status': status, 'url': canonical_url or final_url,
+            'title': '', 'description': '', 'jsonld': '', 'text': '',
+            'quality': 'unavailable', 'method': 'blocked-shell',
+            'reason': 'The public page returned a sign-in/challenge shell rather than profile content.'
+        }
+
     useful = bool((og_title or title) and (desc or jsonld or len(visible) > 120))
-    quality = 'good' if useful and not blocked else (
-        'limited' if (title or desc or jsonld or len(visible) > 80) else 'unavailable'
-    )
+    quality = 'good' if useful else ('limited' if (title or desc or jsonld or len(visible) > 80) else 'unavailable')
     return {
         'ok': status >= 200 and status < 400,
-        'status': status,
-        'url': canonical_url or final_url,
-        'title': (og_title or title)[:220],
-        'description': desc[:1000],
-        'jsonld': jsonld[:2500],
-        'text': visible[:8000],
-        'quality': quality,
+        'status': status, 'url': canonical_url or final_url,
+        'title': (og_title or title)[:220], 'description': desc[:1000],
+        'jsonld': jsonld[:2500], 'text': visible[:8000],
+        'quality': quality, 'method': 'direct', 'reason': ''
     }
+
 
 def fetch_public(url):
     # Direct fetch first; if a social site returns a login/challenge shell,
@@ -308,6 +315,8 @@ def fetch_public(url):
         )
         if rr.ok and rr.text.strip():
             text = re.sub(r'\s+', ' ', rr.text).strip()
+            if is_auth_shell(text, host):
+                raise RuntimeError('reader returned authentication shell')
             title = ''
             for line in rr.text.splitlines():
                 line = line.strip().lstrip('#').strip()
@@ -372,11 +381,11 @@ def new_profile(linkedin, instagram):
             name = m.group(1).strip()
         elif 'LinkedIn' not in clean_title and 'Instagram' not in clean_title:
             name = clean_title[:80].strip()
-    if not name:
+    if not name or is_auth_shell(name, 'linkedin.com'):
         name = slug_name(linkedin) or slug_name(instagram) or 'New profile'
 
     role = 'Analyzed from supplied public-source metadata'
-    if ln.get('description'):
+    if ln.get('description') and not is_auth_shell(ln['description'], 'linkedin.com'):
         role = ln['description'][:180]
 
     source_quality = {
