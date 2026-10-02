@@ -65,15 +65,45 @@ def get_person(pid):
     return BY_ID.get(pid) or CUSTOM.get(pid)
 
 def profile_view(p):
+    interests = [x for x in p.get('interests', []) if x]
+    hobbies = [x for x in p.get('hobbies', []) if x]
+    values = [x for x in p.get('values', []) if x]
+    quality = p.get('source_quality', {})
+
+    if values:
+        need_line = f"Signals point toward {', '.join(values[:2])}."
+    else:
+        need_line = "The supplied pages did not expose enough evidence to infer personal values."
+
+    enjoy_line = (
+        f"Enjoys {', '.join(hobbies[:2]) or 'activities not established'} "
+        f"and conversations around {', '.join(interests[:2]) or 'topics not established'}."
+    )
+
+    if interests:
+        brief = (
+            f"{p.get('style', 'Evidence-limited')}. "
+            f"The agent will prioritize conversations around {', '.join(interests[:3])} "
+            "and probe for real-world compatibility rather than treating weak metadata as fact."
+        )
+    else:
+        brief = (
+            "Evidence-limited. The agent will ask discovery questions instead of inventing "
+            "interests, hobbies, values, or personality traits."
+        )
+
     return {
         **p,
-        'source_policy': 'Only the supplied public LinkedIn and public Instagram URLs are used for this profile. Unestablished traits are not filled in as facts.',
-        'evidence': [f"LinkedIn: {p['linkedin']}", f"Instagram: {p['instagram']}"],
-        'needs': [
-            f"Signals point toward {', '.join(p['values'][:2])}",
-            f"Enjoys {p['hobbies'][0]} and conversations around {p['interests'][0]}"
+        'source_policy': (
+            'Only the supplied public LinkedIn and public Instagram URLs are used for this profile. '
+            'Weak or missing signals are shown as unknown rather than invented.'
+        ),
+        'evidence': [
+            f"LinkedIn: {p['linkedin']} · {quality.get('LinkedIn', 'supplied')}",
+            f"Instagram: {p['instagram']} · {quality.get('Instagram', 'supplied')}"
         ],
-        'agent_brief': f"{p['style'].capitalize()}. The agent will prioritize conversations around {', '.join(p['interests'][:3])} and probe for real-world compatibility rather than relying on a single shared keyword."
+        'needs': [need_line, enjoy_line],
+        'agent_brief': brief,
     }
 
 def make_conversation(a, b, shared):
@@ -132,41 +162,244 @@ def rankings(person_id):
     for i, r in enumerate(rows): r['rank'] = i + 1
     return rows
 
-def fetch_public(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; PairwiseDemo/1.0)'}
+def normalize_url(url):
+    url = (url or '').strip()
+    if not re.match(r'^https?://', url, re.I):
+        url = 'https://' + url
+    return url
+
+def source_host(url):
     try:
-        r = requests.get(url, headers=headers, timeout=8, allow_redirects=True)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        title = soup.title.get_text(' ', strip=True) if soup.title else ''
-        desc = ''
-        m = soup.find('meta', attrs={'name': 'description'})
-        if m: desc = m.get('content', '')
-        return {'ok': r.ok, 'title': title[:180], 'description': desc[:500], 'status': r.status_code}
-    except Exception as e:
-        return {'ok': False, 'title': '', 'description': '', 'status': 0, 'error': str(e)}
+        from urllib.parse import urlparse
+        return urlparse(url).netloc.lower().split(':')[0].replace('www.', '')
+    except Exception:
+        return ''
+
+def slug_name(url):
+    try:
+        from urllib.parse import urlparse
+        parts = [x for x in urlparse(url).path.split('/') if x]
+        if not parts:
+            return ''
+        slug = parts[-1]
+        if slug.lower() in {'about', 'profile', 'me'} and len(parts) > 1:
+            slug = parts[-2]
+        slug = re.sub(r'[^A-Za-z0-9._-]+', '', slug).strip('._-')
+        if not slug:
+            return ''
+        words = re.sub(r'[_._-]+', ' ', slug).split()
+        return ' '.join(w.capitalize() for w in words)
+    except Exception:
+        return ''
+
+def _meta(soup, *keys):
+    for attr, value in keys:
+        tag = soup.find('meta', attrs={attr: value})
+        if tag and tag.get('content'):
+            return tag.get('content', '').strip()
+    return ''
+
+def _jsonld_text(soup):
+    chunks = []
+    for tag in soup.find_all('script', attrs={'type': re.compile(r'application/ld\+json', re.I)}):
+        raw = tag.string or tag.get_text(' ', strip=True)
+        if not raw:
+            continue
+        try:
+            obj = json.loads(raw)
+            objs = obj if isinstance(obj, list) else [obj]
+            for item in objs:
+                if not isinstance(item, dict):
+                    continue
+                for key in ('name', 'headline', 'description', 'jobTitle', 'worksFor', 'about'):
+                    value = item.get(key)
+                    if isinstance(value, dict):
+                        value = value.get('name', '')
+                    if isinstance(value, list):
+                        value = ' '.join(str(v) for v in value)
+                    if value:
+                        chunks.append(str(value))
+        except Exception:
+            pass
+    return ' '.join(chunks)
+
+def _visible_text(soup):
+    for tag in soup(['script', 'style', 'noscript', 'svg']):
+        tag.decompose()
+    return re.sub(r'\s+', ' ', soup.get_text(' ', strip=True))[:8000]
+
+def _parse_html(html, final_url, status=200):
+    soup = BeautifulSoup(html, 'html.parser')
+    title = soup.title.get_text(' ', strip=True) if soup.title else ''
+    og_title = _meta(soup, ('property', 'og:title'), ('name', 'twitter:title'))
+    desc = _meta(
+        soup,
+        ('name', 'description'),
+        ('property', 'og:description'),
+        ('name', 'twitter:description')
+    )
+    canonical = soup.find('link', rel='canonical')
+    canonical_url = canonical.get('href', '').strip() if canonical else final_url
+    jsonld = _jsonld_text(soup)
+    visible = _visible_text(soup)
+    combined = ' '.join(x for x in [title, og_title, desc, jsonld, visible] if x)
+
+    blocked_markers = (
+        'sign in', 'join linkedin', 'log in', 'login', 'challenge',
+        'unusual traffic', 'page not found', 'sorry, this page'
+    )
+    blocked = any(marker in combined.lower() for marker in blocked_markers)
+    useful = bool((og_title or title) and (desc or jsonld or len(visible) > 120))
+    quality = 'good' if useful and not blocked else (
+        'limited' if (title or desc or jsonld or len(visible) > 80) else 'unavailable'
+    )
+    return {
+        'ok': status >= 200 and status < 400,
+        'status': status,
+        'url': canonical_url or final_url,
+        'title': (og_title or title)[:220],
+        'description': desc[:1000],
+        'jsonld': jsonld[:2500],
+        'text': visible[:8000],
+        'quality': quality,
+    }
+
+def fetch_public(url):
+    # Direct fetch first; if a social site returns a login/challenge shell,
+    # read the exact same supplied URL through Jina Reader.
+    url = normalize_url(url)
+    host = source_host(url)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (compatible; PairwisePublicMetadata/1.0)',
+        'Accept': 'text/html,application/xhtml+xml,text/plain;q=0.9'
+    }
+
+    try:
+        r = requests.get(url, headers=headers, timeout=10, allow_redirects=True)
+        content_type = r.headers.get('content-type', '').lower()
+        if r.ok and ('html' in content_type or r.text):
+            parsed = _parse_html(r.text, r.url, r.status_code)
+            parsed['host'] = host
+            if parsed['quality'] == 'good':
+                parsed['method'] = 'direct'
+                parsed['reason'] = ''
+                return parsed
+            direct = parsed
+        else:
+            direct = {
+                'ok': False, 'status': r.status_code, 'url': r.url,
+                'title': '', 'description': '', 'jsonld': '', 'text': '',
+                'quality': 'unavailable', 'host': host,
+                'method': 'direct', 'reason': 'Source did not return useful HTML.'
+            }
+    except requests.RequestException as e:
+        direct = {
+            'ok': False, 'status': 0, 'url': url, 'title': '', 'description': '',
+            'jsonld': '', 'text': '', 'quality': 'unavailable', 'host': host,
+            'method': 'direct', 'reason': f'Direct fetch failed: {type(e).__name__}.'
+        }
+
+    try:
+        reader_url = 'https://r.jina.ai/' + url
+        rr = requests.get(
+            reader_url,
+            headers={'User-Agent': 'Mozilla/5.0 (compatible; PairwiseReader/1.0)'},
+            timeout=15
+        )
+        if rr.ok and rr.text.strip():
+            text = re.sub(r'\s+', ' ', rr.text).strip()
+            title = ''
+            for line in rr.text.splitlines():
+                line = line.strip().lstrip('#').strip()
+                if line:
+                    title = line[:220]
+                    break
+            quality = 'good' if len(text) >= 120 else 'limited'
+            return {
+                'ok': True, 'status': rr.status_code, 'url': url, 'host': host,
+                'title': title, 'description': text[:1000],
+                'jsonld': '', 'text': text[:8000],
+                'quality': quality, 'method': 'reader',
+                'reason': '' if quality == 'good' else 'Only limited public metadata was available.'
+            }
+    except requests.RequestException:
+        pass
+
+    direct['reason'] = 'Only limited public metadata was available; no unsupported traits were invented.'
+    return direct
+
+def extract_signals(text):
+    text = re.sub(r'\s+', ' ', text or '').lower()
+    groups = {
+        'technology': ['technology', 'software', 'engineering', 'developer', 'saas', 'product'],
+        'ai': ['artificial intelligence', 'machine learning', 'generative ai', ' ai ', 'llm'],
+        'startup': ['startup', 'founder', 'entrepreneur', 'venture', 'business'],
+        'design': ['design', 'designer', 'creative', 'ux', 'ui'],
+        'music': ['music', 'song', 'singing', 'guitar', 'piano', 'dj'],
+        'fitness': ['fitness', 'gym', 'running', 'workout', 'health'],
+        'travel': ['travel', 'travelling', 'traveling', 'adventure', 'explore'],
+        'finance': ['finance', 'investing', 'investment', 'fintech', 'markets'],
+        'writing': ['writing', 'writer', 'blog', 'author', 'content'],
+        'education': ['education', 'teaching', 'teacher', 'learning', 'student'],
+        'marketing': ['marketing', 'branding', 'brand', 'advertising', 'influencer'],
+        'photography': ['photography', 'photographer', 'camera'],
+        'food': ['food', 'cooking', 'chef', 'restaurant'],
+        'sports': ['football', 'cricket', 'basketball', 'tennis', 'sports'],
+    }
+    found = []
+    for key, terms in groups.items():
+        if any(term in text for term in terms):
+            found.append(key)
+    return found[:6]
 
 def new_profile(linkedin, instagram):
-    ln = fetch_public(linkedin); ig = fetch_public(instagram)
-    text = (ln.get('title', '') + ' ' + ln.get('description', '') + ' ' + ig.get('title', '') + ' ' + ig.get('description', '')).lower()
-    interest_map = {
-        'technology': ['technology'], 'ai': ['AI', 'technology'], 'startup': ['entrepreneurship', 'startups'],
-        'design': ['design'], 'music': ['music'], 'fitness': ['fitness'], 'travel': ['travel'],
-        'finance': ['finance', 'investing'], 'writing': ['writing'], 'education': ['education']
+    linkedin = normalize_url(linkedin)
+    instagram = normalize_url(instagram)
+    ln = fetch_public(linkedin)
+    ig = fetch_public(instagram)
+
+    ln_text = ' '.join([ln.get('title', ''), ln.get('description', ''), ln.get('jsonld', ''), ln.get('text', '')])
+    ig_text = ' '.join([ig.get('title', ''), ig.get('description', ''), ig.get('jsonld', ''), ig.get('text', '')])
+    combined = f'{ln_text} {ig_text}'
+    interests = extract_signals(combined)
+
+    name = ''
+    title = ln.get('title', '')
+    if title:
+        clean_title = re.sub(r'\s+', ' ', title)
+        m = re.match(r'^([^|–-]{2,80})\s*[|–-]', clean_title)
+        if m:
+            name = m.group(1).strip()
+        elif 'LinkedIn' not in clean_title and 'Instagram' not in clean_title:
+            name = clean_title[:80].strip()
+    if not name:
+        name = slug_name(linkedin) or slug_name(instagram) or 'New profile'
+
+    role = 'Analyzed from supplied public-source metadata'
+    if ln.get('description'):
+        role = ln['description'][:180]
+
+    source_quality = {
+        'LinkedIn': ln.get('quality', 'unavailable'),
+        'Instagram': ig.get('quality', 'unavailable')
     }
-    interests = []
-    for key, vals in interest_map.items():
-        if key in text: interests += vals
-    interests = list(dict.fromkeys(interests))[:6] or ['Not enough public-source signal']
-    name = 'New profile'
-    m = re.search(r'^(.*?)\s+[|–-]', ln.get('title', ''))
-    if m: name = m.group(1).strip()
+
+    topics = interests[:6]
     return {
-        'id': 'custom', 'name': name, 'role': 'Analyzed from public-source metadata',
-        'linkedin': linkedin, 'instagram': instagram, 'interests': interests,
-        'hobbies': ['Not established from the supplied sources'],
-        'style': 'Not established from the supplied sources',
-        'values': ['Not established from the supplied sources'], 'live': True,
-        'linkedin_snapshot': ln, 'instagram_snapshot': ig
+        'id': 'custom',
+        'name': name,
+        'role': role,
+        'linkedin': linkedin,
+        'instagram': instagram,
+        'interests': topics,
+        'hobbies': topics[:3],
+        'style': 'Evidence-based profile read' if topics else 'Evidence-limited',
+        'values': topics[:3],
+        'live': True,
+        'linkedin_snapshot': ln,
+        'instagram_snapshot': ig,
+        'source_quality': source_quality,
+        'usable_sources': sum(v == 'good' for v in source_quality.values()),
     }
 
 @app.get('/', response_class=HTMLResponse)
@@ -199,9 +432,14 @@ def rank_page(request: Request, pid: str):
 @app.post('/api/analyze')
 async def analyze(payload: dict):
     linkedin = (payload.get('linkedin') or '').strip(); instagram = (payload.get('instagram') or '').strip()
-    if not linkedin or not instagram: return JSONResponse({'error': 'Both public URLs are required.'}, status_code=400)
-    if 'linkedin.com' not in linkedin.lower() or 'instagram.com' not in instagram.lower():
-        return JSONResponse({'error': 'Please provide a LinkedIn URL and an Instagram URL.'}, status_code=400)
+    if not linkedin or not instagram:
+        return JSONResponse({'error': 'Both public URLs are required.'}, status_code=400)
+    linkedin = normalize_url(linkedin)
+    instagram = normalize_url(instagram)
+    if source_host(linkedin) not in {'linkedin.com', 'in.linkedin.com'}:
+        return JSONResponse({'error': 'Please provide a public LinkedIn profile URL.'}, status_code=400)
+    if source_host(instagram) not in {'instagram.com'}:
+        return JSONResponse({'error': 'Please provide a public Instagram profile URL.'}, status_code=400)
     p = new_profile(linkedin, instagram)
     p['id'] = 'custom-' + uuid.uuid4().hex[:10]
     CUSTOM[p['id']] = p
