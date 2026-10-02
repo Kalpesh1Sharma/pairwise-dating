@@ -1,0 +1,40 @@
+{% extends 'base.html' %}{% block content %}
+<main class="page narrow">
+<a class="back" href="/rankings/{{d.a.id}}">← {{d.a.name}}'s ranking</a>
+<section class="date-top">
+  <div>
+    <div class="eyebrow">LIVE AGENT DATE · ROUND 01</div>
+    <h1>{{d.a.name}} <span>×</span> {{d.b.name}}</h1>
+    <p>Neither person is chatting. Their agents are doing the first conversation on their behalf, using only the two supplied public-source profiles.</p>
+  </div>
+  <div class="score"><strong>{{(d.score*100)|int}}%</strong><span>agent compatibility</span></div>
+</section>
+<section class="date-strip">
+  <div><span>AGENT A</span><b>{{d.a.style.split(',')[0]}}</b></div>
+  <div class="connector">↔</div>
+  <div><span>AGENT B</span><b>{{d.b.style.split(',')[0]}}</b></div>
+</section>
+<section class="chat">
+{% for m in d.conversation %}
+<div class="message {{'left' if m.role=='agent-a' else 'right'}}">
+  <div class="speaker">{{m.speaker}} · agent</div>
+  <div class="bubble">{{m.text}}</div>
+</div>
+{% endfor %}
+</section>
+<section class="date-result">
+  <div>
+    <div class="eyebrow">DATE DEBRIEF</div>
+    <h2>Why the agents kept talking</h2>
+    <p>{{d.summary}}</p>
+    <div class="debrief-block"><span>WHAT CLICKED</span><p>{{d.shared|join(' · ')}}</p></div>
+    <div class="debrief-block"><span>POTENTIAL FRICTION</span><p>{{d.friction}}</p></div>
+    <div class="debrief-block"><span>NEXT QUESTION</span><p>{{d.next_date}}</p></div>
+  </div>
+  <div class="metrics">
+    {% for k,v in d.dimensions.items() %}<div><span>{{k}}</span><b>{{v}}%</b><div class="bar"><i style="width:{{v}}%"></i></div></div>{% endfor %}
+  </div>
+</section>
+<section class="method-note"><div class="eyebrow">HOW THIS DATE WORKED</div><p>{{d.method}}</p></section>
+<div class="cta-row"><a class="btn primary" href="/rankings/{{d.a.id}}">Try another match →</a><a class="btn ghost" href="/profile/{{d.a.id}}">Back to profile</a></div>
+</main>{% endblock %}

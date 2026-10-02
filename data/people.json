@@ -1,0 +1,604 @@
+[
+  {
+    "id": "nithin-kamath",
+    "name": "Nithin Kamath",
+    "role": "Founder, Zerodha",
+    "linkedin": "https://www.linkedin.com/in/nithin-kamath-81136242",
+    "instagram": "https://www.instagram.com/nithinkamath/",
+    "interests": [
+      "entrepreneurship",
+      "investing",
+      "fitness",
+      "technology"
+    ],
+    "hobbies": [
+      "running",
+      "reading",
+      "building companies"
+    ],
+    "style": "practical, curious, long-term oriented",
+    "values": [
+      "simplicity",
+      "financial awareness",
+      "sustainability"
+    ]
+  },
+  {
+    "id": "nikhil-kamath",
+    "name": "Nikhil Kamath",
+    "role": "Entrepreneur & investor",
+    "linkedin": "https://www.linkedin.com/in/nikhilkamathcio",
+    "instagram": "https://www.instagram.com/nikhilkamathcio/",
+    "interests": [
+      "startups",
+      "investing",
+      "technology",
+      "media",
+      "ideas"
+    ],
+    "hobbies": [
+      "podcasting",
+      "conversation",
+      "exploring ideas"
+    ],
+    "style": "curious, conversational, analytical",
+    "values": [
+      "learning",
+      "independence",
+      "open debate"
+    ]
+  },
+  {
+    "id": "deepinder-goyal",
+    "name": "Deepinder Goyal",
+    "role": "Entrepreneur",
+    "linkedin": "https://www.linkedin.com/in/deepigoyal",
+    "instagram": "https://www.instagram.com/deepigoyal/",
+    "interests": [
+      "technology",
+      "product",
+      "entrepreneurship",
+      "fitness"
+    ],
+    "hobbies": [
+      "building products",
+      "fitness",
+      "cars"
+    ],
+    "style": "direct, product-focused, experimental",
+    "values": [
+      "craft",
+      "speed",
+      "customer experience"
+    ]
+  },
+  {
+    "id": "bhavish-aggarwal",
+    "name": "Bhavish Aggarwal",
+    "role": "Founder & entrepreneur",
+    "linkedin": "https://www.linkedin.com/in/bhavishaggarwal",
+    "instagram": "https://www.instagram.com/bhavishaggarwal/",
+    "interests": [
+      "technology",
+      "mobility",
+      "AI",
+      "entrepreneurship"
+    ],
+    "hobbies": [
+      "building",
+      "technology exploration",
+      "travel"
+    ],
+    "style": "ambitious, builder-oriented, future-focused",
+    "values": [
+      "innovation",
+      "scale",
+      "impact"
+    ]
+  },
+  {
+    "id": "ritesh-agarwal",
+    "name": "Ritesh Agarwal",
+    "role": "Founder, OYO",
+    "linkedin": "https://www.linkedin.com/in/riteshagar",
+    "instagram": "https://www.instagram.com/riteshagar/",
+    "interests": [
+      "entrepreneurship",
+      "hospitality",
+      "startups",
+      "technology"
+    ],
+    "hobbies": [
+      "travel",
+      "building businesses",
+      "reading"
+    ],
+    "style": "energetic, entrepreneurial, curious",
+    "values": [
+      "execution",
+      "learning",
+      "global perspective"
+    ]
+  },
+  {
+    "id": "vijay-shekhar-sharma",
+    "name": "Vijay Shekhar Sharma",
+    "role": "Founder, Paytm",
+    "linkedin": "https://www.linkedin.com/in/vijayshekhar",
+    "instagram": "https://www.instagram.com/vijayshekhar/",
+    "interests": [
+      "fintech",
+      "technology",
+      "entrepreneurship",
+      "music"
+    ],
+    "hobbies": [
+      "music",
+      "technology",
+      "building companies"
+    ],
+    "style": "energetic, technology-focused, optimistic",
+    "values": [
+      "innovation",
+      "access",
+      "entrepreneurship"
+    ]
+  },
+  {
+    "id": "peyush-bansal",
+    "name": "Peyush Bansal",
+    "role": "Founder, Lenskart",
+    "linkedin": "https://www.linkedin.com/in/peyushbansal",
+    "instagram": "https://www.instagram.com/peyushbansal/",
+    "interests": [
+      "consumer technology",
+      "entrepreneurship",
+      "design",
+      "education"
+    ],
+    "hobbies": [
+      "product building",
+      "mentoring",
+      "travel"
+    ],
+    "style": "warm, product-oriented, growth-minded",
+    "values": [
+      "customer focus",
+      "accessibility",
+      "learning"
+    ]
+  },
+  {
+    "id": "ankur-warikoo",
+    "name": "Ankur Warikoo",
+    "role": "Entrepreneur & educator",
+    "linkedin": "https://www.linkedin.com/in/warikoo",
+    "instagram": "https://www.instagram.com/ankurwarikoo/",
+    "interests": [
+      "learning",
+      "entrepreneurship",
+      "personal growth",
+      "finance"
+    ],
+    "hobbies": [
+      "writing",
+      "teaching",
+      "reading"
+    ],
+    "style": "reflective, structured, encouraging",
+    "values": [
+      "growth",
+      "kindness",
+      "sustainable success"
+    ]
+  },
+  {
+    "id": "bhuvan-bam",
+    "name": "Bhuvan Bam",
+    "role": "Creator & actor",
+    "linkedin": "https://www.linkedin.com/in/bhuvanbam",
+    "instagram": "https://www.instagram.com/bhuvan.bam/",
+    "interests": [
+      "comedy",
+      "storytelling",
+      "music",
+      "film"
+    ],
+    "hobbies": [
+      "music",
+      "writing",
+      "performing"
+    ],
+    "style": "creative, humorous, expressive",
+    "values": [
+      "creativity",
+      "authenticity",
+      "storytelling"
+    ]
+  },
+  {
+    "id": "ranveer-allahbadia",
+    "name": "Ranveer Allahbadia",
+    "role": "Creator & entrepreneur",
+    "linkedin": "https://www.linkedin.com/in/ranveer-allahbadia",
+    "instagram": "https://www.instagram.com/ranveerallahbadia/",
+    "interests": [
+      "podcasting",
+      "fitness",
+      "entrepreneurship",
+      "self-development"
+    ],
+    "hobbies": [
+      "podcasting",
+      "fitness",
+      "reading"
+    ],
+    "style": "curious, conversational, self-improvement oriented",
+    "values": [
+      "growth",
+      "health",
+      "curiosity"
+    ]
+  },
+  {
+    "id": "kunal-shah",
+    "name": "Kunal Shah",
+    "role": "Founder, CRED",
+    "linkedin": "https://www.linkedin.com/in/kunalshah",
+    "instagram": "https://www.instagram.com/kunalbshah/",
+    "interests": [
+      "behavioral economics",
+      "technology",
+      "startups",
+      "design"
+    ],
+    "hobbies": [
+      "reading",
+      "thinking about products",
+      "writing",
+      "travel"
+    ],
+    "style": "analytical, idea-driven, playful",
+    "values": [
+      "curiosity",
+      "product thinking",
+      "independence"
+    ]
+  },
+  {
+    "id": "sanjeev-bikhchandani",
+    "name": "Sanjeev Bikhchandani",
+    "role": "Entrepreneur & investor",
+    "linkedin": "https://www.linkedin.com/in/sanjeevbikhchandani",
+    "instagram": "https://www.instagram.com/sanjeevbikhchandani/",
+    "interests": [
+      "startups",
+      "investing",
+      "technology",
+      "education"
+    ],
+    "hobbies": [
+      "mentoring",
+      "reading",
+      "investing"
+    ],
+    "style": "thoughtful, entrepreneurial, mentoring",
+    "values": [
+      "long-term thinking",
+      "learning",
+      "institution building"
+    ]
+  },
+  {
+    "id": "falguni-nayar",
+    "name": "Falguni Nayar",
+    "role": "Founder, Nykaa",
+    "linkedin": "https://www.linkedin.com/in/falguni-nayar-845065a0",
+    "instagram": "https://www.instagram.com/falguninayar/",
+    "interests": [
+      "consumer brands",
+      "entrepreneurship",
+      "beauty",
+      "business"
+    ],
+    "hobbies": [
+      "travel",
+      "business",
+      "family time"
+    ],
+    "style": "strategic, disciplined, entrepreneurial",
+    "values": [
+      "execution",
+      "independence",
+      "building brands"
+    ]
+  },
+  {
+    "id": "vineeta-singh",
+    "name": "Vineeta Singh",
+    "role": "Entrepreneur & investor",
+    "linkedin": "https://www.linkedin.com/in/vineetasingh",
+    "instagram": "https://www.instagram.com/vineetasingh/",
+    "interests": [
+      "consumer brands",
+      "entrepreneurship",
+      "fitness",
+      "startups"
+    ],
+    "hobbies": [
+      "running",
+      "business",
+      "investing"
+    ],
+    "style": "energetic, resilient, direct",
+    "values": [
+      "discipline",
+      "ambition",
+      "learning"
+    ]
+  },
+  {
+    "id": "sahil-bloom",
+    "name": "Sahil Bloom",
+    "role": "Writer & entrepreneur",
+    "linkedin": "https://www.linkedin.com/in/sahilbloom",
+    "instagram": "https://www.instagram.com/sahilbloom/",
+    "interests": [
+      "writing",
+      "business",
+      "personal growth",
+      "fitness"
+    ],
+    "hobbies": [
+      "writing",
+      "running",
+      "reading"
+    ],
+    "style": "reflective, structured, curious",
+    "values": [
+      "family",
+      "growth",
+      "health"
+    ]
+  },
+  {
+    "id": "ali-abdaal",
+    "name": "Ali Abdaal",
+    "role": "Creator & entrepreneur",
+    "linkedin": "https://www.linkedin.com/in/aliabdaal",
+    "instagram": "https://www.instagram.com/aliabdaal/",
+    "interests": [
+      "productivity",
+      "education",
+      "technology",
+      "content"
+    ],
+    "hobbies": [
+      "piano",
+      "reading",
+      "video creation"
+    ],
+    "style": "curious, thoughtful, educational",
+    "values": [
+      "learning",
+      "joy",
+      "usefulness"
+    ]
+  },
+  {
+    "id": "naval-ravikant",
+    "name": "Naval Ravikant",
+    "role": "Entrepreneur & investor",
+    "linkedin": "https://www.linkedin.com/in/navalravikant",
+    "instagram": "https://www.instagram.com/naval/",
+    "interests": [
+      "startups",
+      "philosophy",
+      "technology",
+      "investing"
+    ],
+    "hobbies": [
+      "reading",
+      "thinking",
+      "technology"
+    ],
+    "style": "philosophical, concise, independent",
+    "values": [
+      "freedom",
+      "curiosity",
+      "long-term thinking"
+    ]
+  },
+  {
+    "id": "reid-hoffman",
+    "name": "Reid Hoffman",
+    "role": "Entrepreneur & investor",
+    "linkedin": "https://www.linkedin.com/in/reidhoffman",
+    "instagram": "https://www.instagram.com/reidhoffman/",
+    "interests": [
+      "technology",
+      "networks",
+      "entrepreneurship",
+      "AI"
+    ],
+    "hobbies": [
+      "reading",
+      "podcasting",
+      "investing"
+    ],
+    "style": "strategic, analytical, conversational",
+    "values": [
+      "innovation",
+      "networks",
+      "learning"
+    ]
+  },
+  {
+    "id": "brian-chesky",
+    "name": "Brian Chesky",
+    "role": "Co-founder, Airbnb",
+    "linkedin": "https://www.linkedin.com/in/brianchesky",
+    "instagram": "https://www.instagram.com/brianchesky/",
+    "interests": [
+      "design",
+      "travel",
+      "technology",
+      "hospitality"
+    ],
+    "hobbies": [
+      "travel",
+      "design",
+      "architecture"
+    ],
+    "style": "design-led, curious, detail-oriented",
+    "values": [
+      "belonging",
+      "design",
+      "craft"
+    ]
+  },
+  {
+    "id": "melanie-perkins",
+    "name": "Melanie Perkins",
+    "role": "Co-founder, Canva",
+    "linkedin": "https://www.linkedin.com/in/melanieperkins",
+    "instagram": "https://www.instagram.com/melanie_perkins/",
+    "interests": [
+      "design",
+      "technology",
+      "education",
+      "entrepreneurship"
+    ],
+    "hobbies": [
+      "design",
+      "travel",
+      "building products"
+    ],
+    "style": "mission-driven, creative, collaborative",
+    "values": [
+      "accessibility",
+      "creativity",
+      "impact"
+    ]
+  },
+  {
+    "id": "whitney-wolfe-herd",
+    "name": "Whitney Wolfe Herd",
+    "role": "Founder & entrepreneur",
+    "linkedin": "https://www.linkedin.com/in/whitneyherd",
+    "instagram": "https://www.instagram.com/whitney/",
+    "interests": [
+      "technology",
+      "consumer products",
+      "entrepreneurship",
+      "community"
+    ],
+    "hobbies": [
+      "family",
+      "travel",
+      "building products"
+    ],
+    "style": "mission-driven, direct, community-oriented",
+    "values": [
+      "community",
+      "innovation",
+      "independence"
+    ]
+  },
+  {
+    "id": "drew-houston",
+    "name": "Drew Houston",
+    "role": "Co-founder, Dropbox",
+    "linkedin": "https://www.linkedin.com/in/drewhouston",
+    "instagram": "https://www.instagram.com/drewhouston/",
+    "interests": [
+      "technology",
+      "product",
+      "entrepreneurship",
+      "design"
+    ],
+    "hobbies": [
+      "building products",
+      "technology",
+      "reading"
+    ],
+    "style": "technical, curious, product-focused",
+    "values": [
+      "simplicity",
+      "craft",
+      "innovation"
+    ]
+  },
+  {
+    "id": "sundar-pichai",
+    "name": "Sundar Pichai",
+    "role": "Technology executive",
+    "linkedin": "https://www.linkedin.com/in/sundarpichai",
+    "instagram": "https://www.instagram.com/sundarpichai/",
+    "interests": [
+      "technology",
+      "AI",
+      "education",
+      "innovation"
+    ],
+    "hobbies": [
+      "cricket",
+      "technology",
+      "reading"
+    ],
+    "style": "calm, thoughtful, technology-focused",
+    "values": [
+      "access",
+      "innovation",
+      "learning"
+    ]
+  },
+  {
+    "id": "jensen-huang",
+    "name": "Jensen Huang",
+    "role": "Founder & technology executive",
+    "linkedin": "https://www.linkedin.com/in/jensen-huang",
+    "instagram": "https://www.instagram.com/jensenhuang/",
+    "interests": [
+      "AI",
+      "computing",
+      "technology",
+      "engineering"
+    ],
+    "hobbies": [
+      "technology",
+      "engineering",
+      "design"
+    ],
+    "style": "technical, energetic, future-focused",
+    "values": [
+      "innovation",
+      "engineering",
+      "long-term impact"
+    ]
+  },
+  {
+    "id": "satya-nadella",
+    "name": "Satya Nadella",
+    "role": "Technology executive",
+    "linkedin": "https://www.linkedin.com/in/satyanadella",
+    "instagram": "https://www.instagram.com/satyanadella/",
+    "interests": [
+      "technology",
+      "AI",
+      "leadership",
+      "learning"
+    ],
+    "hobbies": [
+      "cricket",
+      "reading",
+      "poetry"
+    ],
+    "style": "empathetic, reflective, technology-focused",
+    "values": [
+      "growth mindset",
+      "empathy",
+      "innovation"
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block content %}
+<main class="page narrow">
+<a class="back" href="/profiles">← all profiles</a>
+<section class="profile-head"><div class="avatar huge">{{p.name[0]}}</div><div><div class="eyebrow">AGENT PROFILE</div><h1>{{p.name}}</h1><p class="role">{{p.role}}</p><div class="sources"><a href="{{p.linkedin}}" target="_blank" rel="noopener">LinkedIn ↗</a><a href="{{p.instagram}}" target="_blank" rel="noopener">Instagram ↗</a></div></div></section>
+<section class="source-line"><span>2 SOURCE INPUTS</span><b>LinkedIn + public Instagram</b><small>No other source is used for this demo profile.</small></section>
+<div class="analysis-grid">
+<section class="panel"><div class="eyebrow">NEEDS & VALUES</div><h2>What the agent is looking for</h2>{% for x in p.needs %}<div class="bullet">{{x}}</div>{% endfor %}<div class="mini-label">Values</div><div class="chips">{% for x in p["values"] %}<span>{{x}}</span>{% endfor %}</div></section>
+<section class="panel"><div class="eyebrow">INTEREST GRAPH</div><h2>What lights them up</h2><div class="big-chips">{% for x in p.interests %}<span>{{x}}</span>{% endfor %}</div><div class="mini-label">Hobbies</div><p>{{p.hobbies|join(' · ')}}</p></section>
+<section class="panel wide"><div class="eyebrow">AGENT READ</div><h2>{{p.style}}</h2><p>{{p.agent_brief}}</p><div class="evidence"><div class="mini-label">SOURCE LINKS</div>{% for x in p.evidence %}<div>↳ {{x}}</div>{% endfor %}</div></section>
+</div>
+<section class="profile-method"><span>AGENT RULE</span><p>{{p.source_policy}}</p></section>
+<div class="cta-row"><a class="btn primary" href="/rankings/{{p.id}}">See personalized matches →</a><a class="btn ghost" href="/rankings/{{p.id}}">Choose a date</a></div>
+</main>{% endblock %}

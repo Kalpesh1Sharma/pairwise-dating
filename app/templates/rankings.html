@@ -1,0 +1,29 @@
+{% extends 'base.html' %}{% block content %}
+<main class="page narrow">
+<a class="back" href="/profiles">← all profiles</a>
+<section class="ranking-head">
+  <div class="eyebrow">PERSONALIZED RANKING · CHOOSE A DATE</div>
+  <h1>{{me.name}}'s agent has opinions.</h1>
+  <p>Every candidate is compared against <strong>{{me.name}}'s</strong> profile — not against a global leaderboard. The agent weighs overlapping interests, values, conversational style and useful differences.</p>
+</section>
+<section class="ranking-explain">
+  <div><span>01</span><b>Profile signals</b><small>Interests · hobbies · values</small></div>
+  <div><span>02</span><b>Compatibility pass</b><small>Overlap + complementarity</small></div>
+  <div><span>03</span><b>Agent date</b><small>Conversation tests the fit</small></div>
+</section>
+<div class="rank-list">
+{% for r in rows[:10] %}
+<a class="rank-row" href="/date/{{me.id}}/{{r.person.id}}">
+  <div class="rank">{{'%02d' % r.rank}}</div>
+  <div class="avatar">{{r.person.name[0]}}</div>
+  <div class="rank-main">
+    <h3>{{r.person.name}}</h3><p>{{r.person.role}}</p>
+    <div class="chips">{% for x in r.shared[:3] %}<span>{{x}}</span>{% endfor %}</div>
+    <small class="rank-reason">{{r.reason}}</small>
+  </div>
+  <div class="rank-score"><strong>{{r.score}}%</strong><span>agent fit</span></div>
+  <div class="arrow">→</div>
+</a>
+{% endfor %}
+</div>
+</main>{% endblock %}

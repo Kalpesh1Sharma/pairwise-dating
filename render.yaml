@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: pairwise-agentic-dating
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
